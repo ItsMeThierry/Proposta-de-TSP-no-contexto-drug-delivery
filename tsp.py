@@ -21,9 +21,9 @@ def resolve():
 
     for i in range(len(matriz)):
         for j in range(i, len(matriz)):
-            media = (matriz[i][j] + matriz[j][i])/2.0
-            matriz[i][j] = '{:.1f}'.format(media)
-            matriz[j][i] = '{:.1f}'.format(media)
+            media = (matriz[i][j] + matriz[j][i])*100/2
+            matriz[i][j] = int(media)
+            matriz[j][i] = int(media)
         
     problem = tsplib95.models.StandardProblem()
 
@@ -40,5 +40,4 @@ def resolve():
     solver = TSPSolver.from_tspfile(f'teste.tsp')
     solution = solver.solve()
 
-    f_out = open('output.txt', 'w')
-    f_out.write(solution.tour)
+    return solution.tour
