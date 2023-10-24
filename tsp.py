@@ -6,7 +6,7 @@ import tsplib95
 def lerMatriz(type):
     matriz = []
 
-    with open(type + '_matrix.txt', 'r') as f:
+    with open('matrizes/' + type + '_matrix.txt', 'r') as f:
         for linha in f:
 
             valores_tmp = linha.strip().split(' ')
@@ -32,7 +32,7 @@ def resolve():
         
     problem = tsplib95.models.StandardProblem()
 
-    problem.name = "Teste"
+    problem.name = "Problema"
     problem.type = "TSP"
     problem.dimension = len(matriz)
     problem.edge_weight_type = "EXPLICIT"
@@ -41,8 +41,8 @@ def resolve():
     problem.display_data_type = "NO_DISPLAY"
     problem.edge_weights = matriz
 
-    problem.save(f'teste.tsp')
-    solver = TSPSolver.from_tspfile(f'teste.tsp')
+    problem.save(f'data/problema.tsp')
+    solver = TSPSolver.from_tspfile(f'data/problema.tsp')
     solution = solver.solve()
 
     return solution.tour

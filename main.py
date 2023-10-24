@@ -1,6 +1,7 @@
 import requests
 import tsp
 import mapa
+import json
 
 def requisição(tipo_matriz):
   url = 'http://router.project-osrm.org/table/v1/driving/'
@@ -8,7 +9,6 @@ def requisição(tipo_matriz):
   print('Formatando url de requisição...')
   url = url + ';'.join(coords) + '?annotations=' + tipo_matriz        
 
-  print(url)
   print('Fazendo requisição...')
 
   r = requests.get(url)
@@ -19,7 +19,7 @@ def requisição(tipo_matriz):
     dur = r.json()[tipo_matriz + 's']
 
     print('Salvando matriz em ' + tipo_matriz + '_matrix.txt...')
-    f_out = open(tipo_matriz + '_matrix.txt', 'w')
+    f_out = open('matrizes/' + tipo_matriz + '_matrix.txt', 'w')
     for _, row in enumerate(dur):
       for _, val in enumerate(row):
         f_out.write(str(val) + ' ')
@@ -29,7 +29,7 @@ def requisição(tipo_matriz):
   else:
     print('Erro na requisição:', r.json()['message'])
 
-print('Lendo lista de cidades...')
+print('Lendo input_cities.txt...')
     
 cidades = []
 
@@ -38,11 +38,11 @@ with open('input_cities.txt', 'r') as f:
       l = l.replace('\n', '')
       cidades.append(l)
 
-print('Abrindo coord_list.txt...')
+print('Verificando lista...')
 
 lista = []
 
-with open('coord_list.txt', 'r') as f:
+with open('data/coord_list.txt', 'r') as f:
     for l in f:
       l = l.replace('\n', '')
 
@@ -63,23 +63,33 @@ for c in cidades:
 
 requisição('duration')
 requisição('distance')
-resultado = tsp.resolve()
+resultado_id = tsp.resolve()
 
-with open('resultado.txt', 'w') as f:
-  f.write('Rota:\n')
-  for i in resultado:
-    f.write(cidades[i] + '\n')
+print('Gerando resultado...')
 
-  matriz = tsp.lerMatriz('duration')
+resultado_dict = dict()
 
-  f.write('\nParadas pra dormir:\n')
-  sum = 0
-  for i in range(1, len(resultado)):
-    sum += matriz[resultado[i]][resultado[i-1]]
+resultado_dict['Input'] = cidades
+resultado_dict['Rota otimizada'] = [cidades[i] for i in resultado_id]
 
-    if(sum > 2880000):
-      sum = 0
-      f.write(cidades[resultado[i]] + '\n')
+matriz = tsp.lerMatriz('duration')
+paradas = []
+sum = 0
 
-mapa.mostrar(cidades, coords, resultado)
+for i in range(1, len(resultado_id)):
+  sum += matriz[resultado_id[i]][resultado_id[i-1]]
 
+  if(sum > 2880000):
+    sum = 0
+    paradas.append(cidades[resultado_id[i]])
+
+resultado_dict['Pontos de descanso'] = paradas
+
+tempo = (sum / 360000) + len(paradas) * 8
+
+resultado_dict['Tempo de viagem total (em hora)'] = tempo
+
+with open(f"resultado.json", 'w') as f:
+  json.dump(resultado_dict, f, indent = 2)
+
+mapa.mostrar(coords, resultado_id)
