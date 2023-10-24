@@ -1,6 +1,6 @@
 import requests
 import tsp
-#import mapa
+import mapa
 
 def requisição(tipo_matriz):
   url = 'http://router.project-osrm.org/table/v1/driving/'
@@ -81,7 +81,5 @@ with open('resultado.txt', 'w') as f:
       sum = 0
       f.write(cidades[resultado[i]] + '\n')
 
-"""
-mapa.mostrar()
+mapa.mostrar(cidades, coords, resultado)
 
-"""
