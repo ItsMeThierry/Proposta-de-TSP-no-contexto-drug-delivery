@@ -3,11 +3,10 @@ from concorde.concorde import Concorde
 from concorde.tsp import TSPSolver
 import tsplib95
 
-##Valeu Guilherme
-def resolve():
+def lerMatriz(type):
     matriz = []
 
-    with open('output_matrix.txt', 'r') as f:
+    with open(type + '_matrix.txt', 'r') as f:
         for linha in f:
 
             valores_tmp = linha.strip().split(' ')
@@ -24,6 +23,12 @@ def resolve():
             media = (matriz[i][j] + matriz[j][i])*100/2
             matriz[i][j] = int(media)
             matriz[j][i] = int(media)
+
+    return matriz
+
+##Valeu Guilherme
+def resolve():
+    matriz = lerMatriz('distance')
         
     problem = tsplib95.models.StandardProblem()
 
