@@ -75,17 +75,19 @@ resultado_dict['Rota otimizada'] = [cidades[i] for i in resultado_id]
 matriz = tsp.lerMatriz('duration')
 paradas = []
 sum = 0
+sumT = 0
 
 for i in range(1, len(resultado_id)):
   sum += matriz[resultado_id[i]][resultado_id[i-1]]
 
   if(sum > 2880000):
+    sumT = sum
     sum = 0
     paradas.append(cidades[resultado_id[i]])
 
 resultado_dict['Pontos de descanso'] = paradas
 
-tempo = (sum / 360000) + len(paradas) * 8
+tempo = (sumT + sum) / 360000
 
 resultado_dict['Tempo de viagem total (em hora)'] = tempo
 
