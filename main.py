@@ -81,7 +81,7 @@ for i in range(1, len(resultado_id)):
   sum += matriz[resultado_id[i]][resultado_id[i-1]]
 
   if(sum > 2880000):
-    sumT = sum
+    sumT += sum
     sum = 0
     paradas.append(cidades[resultado_id[i]])
 
