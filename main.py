@@ -72,24 +72,29 @@ resultado_dict = dict()
 resultado_dict['Input'] = cidades
 resultado_dict['Rota otimizada'] = [cidades[i] for i in resultado_id]
 
-matriz = tsp.lerMatriz('duration')
+matrizT = tsp.lerMatriz('duration')
+matrizD = tsp.lerMatriz('distance')
 paradas = []
-sum = 0
+sum1 = 0
+sum2 = 0
 sumT = 0
 
 for i in range(1, len(resultado_id)):
-  sum += matriz[resultado_id[i]][resultado_id[i-1]]
+  sum1 += matrizT[resultado_id[i]][resultado_id[i-1]]
+  sum2 += matrizD[resultado_id[i]][resultado_id[i-1]]
 
-  if(sum > 2880000):
-    sumT += sum
-    sum = 0
+  if(sum1 > 2880000):
+    sumT += sum1
+    sum1 = 0
     paradas.append(cidades[resultado_id[i]])
 
 resultado_dict['Pontos de descanso'] = paradas
 
-tempo = (sumT + sum) / 360000
+tempo = (sumT + sum1) / 360000
+distancia = sum2 / 1000
 
 resultado_dict['Tempo de viagem total (em hora)'] = tempo
+resultado_dict['Distancia total da viagem (em kilometros)'] = distancia
 
 with open(f"resultado.json", 'w') as f:
   json.dump(resultado_dict, f, indent = 2)
