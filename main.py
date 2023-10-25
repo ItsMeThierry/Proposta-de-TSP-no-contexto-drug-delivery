@@ -29,8 +29,30 @@ def requisição(tipo_matriz):
   else:
     print('Erro na requisição:', r.json()['message'])
 
-print('Lendo input_cities.txt...')
+def requisiçãoDeRota():
+  url = 'http://router.project-osrm.org/route/v1/driving/'
+  
+  print('Formatando url de requisição...')
+  
+  url = url + ';'.join(coords) + '?geometries=geojson&overview=full'
+
+  print(url)
+  print('Fazendo requisição...')
+
+  r = requests.get(url)
+
+  if r.json()['code'] == 'Ok':
+    print('Processando resposta...')
+
+    resp = r.json()['routes']
+
+    return resp[0]['geometry']['coordinates']
     
+  else:
+    print('Erro na requisição:', r.json()['message'])
+
+print('Lendo input_cities.txt...')
+ 
 cidades = []
 
 with open('input_cities.txt', 'r') as f:
@@ -99,4 +121,5 @@ resultado_dict['Distancia total da viagem (em kilometros)'] = distancia
 with open(f"resultado.json", 'w') as f:
   json.dump(resultado_dict, f, indent = 2)
 
-mapa.mostrar(coords, resultado_id)
+rota = requisiçãoDeRota()
+mapa.mostrar(coords, resultado_id, rota)

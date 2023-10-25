@@ -1,7 +1,7 @@
 import folium
 import json
 
-def mostrar(coords, resultado):
+def mostrar(coords, resultado, rota):
     mapa = folium.Map(location=[-7.194408978973253, -36.845262894925796], zoom_start=8, tiles='cartodb positron')
 
     resultado_json = json.load(open('resultado.json'))
@@ -30,12 +30,14 @@ def mostrar(coords, resultado):
             
             icon=folium.Icon(color = "green" if resultado_json["Input"][i] in resultado_json["Pontos de descanso"] else "red")
         ).add_to(mapa)
-    
+
     trilha = []
 
-    for i in resultado:
-        trilha.append(coords[i])
+    for r in rota:
+        aux = r[0]
+        r[0] = r[1]
+        r[1] = aux
 
-    folium.PolyLine(trilha).add_to(mapa)
+    folium.PolyLine(rota).add_to(mapa)
 
     mapa.save("index.html")
