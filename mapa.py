@@ -32,10 +32,26 @@ def mostrar(coords, resultado):
         ).add_to(mapa)
     
     trilha = []
+    trilhaDanger = []
 
     for i in resultado:
-        trilha.append(coords[i])
+        if i in resultado_json["Pontos de ultrapassagem de 8 horas"]:
+            folium.PolyLine(trilha).add_to(mapa)
+            trilha = []
 
-    folium.PolyLine(trilha).add_to(mapa)
+            trilhaDanger.append(coords[i])
+            trilhaDanger.append(coords[i+1])
+
+            folium.PolyLine(
+                trilhaDanger,
+                color = "red"
+            ).add_to(mapa)
+
+            trilhaDanger = []
+        else:
+            trilha.append(coords[i])
+    
+    if len(trilha) > 0:
+        folium.PolyLine(trilha).add_to(mapa)
 
     mapa.save("index.html")

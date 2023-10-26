@@ -2,7 +2,6 @@ import requests
 import tsp
 import mapa
 import json
-import winsound
 
 def requisição(tipo_matriz):
   url = 'http://router.project-osrm.org/table/v1/driving/'
@@ -50,8 +49,6 @@ with open('data/coord_list.txt', 'r') as f:
       info = l.strip().split(':')
       lista.append(info)
 
-print('Lendo coordenadas (lat, lng)...')
-
 cidade_valor = {i[0]: i[1] for i in lista}
 
 coords = []
@@ -61,11 +58,12 @@ for c in cidades:
     coords.append(cidade_valor[c])
   else:
     print(f'ERRO! Cidade {c} não encontrada.')
-    Beep(2000, 1500)
-    
+
+
 requisição('duration')
 requisição('distance')
 resultado_id = tsp.resolve()
+print(resultado_id)
 
 print('Gerando resultado...')
 
@@ -76,7 +74,8 @@ resultado_dict['Rota otimizada'] = [cidades[i] for i in resultado_id]
 
 matrizT = tsp.lerMatriz('duration')
 matrizD = tsp.lerMatriz('distance')
-paradas = []
+cidades_paradas = []
+caminhos_parados = []
 sum1 = 0
 sum2 = 0
 sumT = 0
@@ -85,12 +84,17 @@ for i in range(1, len(resultado_id)):
   sum1 += matrizT[resultado_id[i]][resultado_id[i-1]]
   sum2 += matrizD[resultado_id[i]][resultado_id[i-1]]
 
-  if(sum1 > 2880000):
+  if sum1 > 2880000 :
     sumT += sum1
     sum1 = 0
-    paradas.append(cidades[resultado_id[i]])
 
-resultado_dict['Pontos de descanso'] = paradas
+    if matrizT[resultado_id[i]][resultado_id[i-1]] > 2880000:
+      caminhos_parados.append(cidades[resultado_id[i]])
+    else:
+      cidades_paradas.append(cidades[resultado_id[i-1]])
+
+resultado_dict['Pontos de descanso'] = cidades_paradas
+resultado_dict['Pontos de ultrapassagem de 8 horas'] = caminhos_parados
 
 tempo = (sumT + sum1) / 360000
 distancia = sum2 / 1000
