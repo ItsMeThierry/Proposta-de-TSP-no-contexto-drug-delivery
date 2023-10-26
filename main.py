@@ -2,6 +2,7 @@ import requests
 import tsp
 import mapa
 import json
+import winsound
 
 def requisição(tipo_matriz):
   url = 'http://router.project-osrm.org/table/v1/driving/'
@@ -60,7 +61,8 @@ for c in cidades:
     coords.append(cidade_valor[c])
   else:
     print(f'ERRO! Cidade {c} não encontrada.')
-
+    Beep(2000, 1500)
+    
 requisição('duration')
 requisição('distance')
 resultado_id = tsp.resolve()

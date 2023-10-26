@@ -1,5 +1,3 @@
-from concorde.problem import Problem
-from concorde.concorde import Concorde
 from concorde.tsp import TSPSolver
 import tsplib95
 
@@ -28,7 +26,7 @@ def lerMatriz(type):
 
 ##Valeu Guilherme
 def resolve():
-    matriz = lerMatriz('distance')
+    matriz = lerMatriz('duration')
         
     problem = tsplib95.models.StandardProblem()
 
