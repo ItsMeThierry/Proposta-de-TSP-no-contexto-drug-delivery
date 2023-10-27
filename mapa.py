@@ -1,10 +1,11 @@
 import folium
 import json
 
-def mostrar(coords, resultado):
+def gerar(coords, idCidades, tipo):
+    print('Gerando mapa_resultado_' + tipo + '.html...')
     mapa = folium.Map(location=[-7.194408978973253, -36.845262894925796], zoom_start=8, tiles='cartodb positron')
 
-    resultado_json = json.load(open('resultado.json'))
+    resultado_json = json.load(open('resultado_'+ tipo +'.json'))
 
     geo_json = json.load(open('data/paraiba.json'))
     folium.GeoJson(
@@ -17,13 +18,7 @@ def mostrar(coords, resultado):
         }
     ).add_to(mapa)
 
-    for i in range(len(coords)):
-        coords[i] = coords[i].strip().split(',')
-        aux = coords[i][0]
-        coords[i][0] = float(coords[i][1])
-        coords[i][1] = float(aux)
-
-    for i in range(len(resultado)):
+    for i in range(len(idCidades)):
         folium.Marker(
             location = [coords[i][0], coords[i][1]],
             popup = resultado_json["Input"][i],
@@ -32,26 +27,26 @@ def mostrar(coords, resultado):
         ).add_to(mapa)
     
     trilha = []
-    trilhaDanger = []
+    trilhaVermelha = []
 
-    for i in resultado:
+    for i in idCidades:
         if i in resultado_json["Pontos de ultrapassagem de 8 horas"]:
             folium.PolyLine(trilha).add_to(mapa)
-            trilha = []
+            trilha.clear()
 
-            trilhaDanger.append(coords[i])
-            trilhaDanger.append(coords[i+1])
+            trilhaVermelha.append(coords[i])
+            trilhaVermelha.append(coords[i+1])
 
             folium.PolyLine(
-                trilhaDanger,
+                trilhaVermelha,
                 color = "red"
             ).add_to(mapa)
 
-            trilhaDanger = []
+            trilhaVermelha.clear()
         else:
             trilha.append(coords[i])
     
     if len(trilha) > 0:
         folium.PolyLine(trilha).add_to(mapa)
 
-    mapa.save("index.html")
+    mapa.save('mapa_resultado_'+ tipo +'.html')
